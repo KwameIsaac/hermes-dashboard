@@ -1,0 +1,4 @@
+.venv/
+ai-trading-bot/
+.DS_Store
+__pycache__/

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-hover: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13, 17, 23, 0.85);
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .header h1 span { color: var(--accent); }
+
+  .header-meta {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 24px;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-card .stat-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Project cards grid */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  .project-card .cycle-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .project-card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-right: 60px;
+  }
+
+  .project-card .challenge {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .project-card .awaiting {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  .awaiting-user {
+    background: rgba(210, 153, 34, 0.15);
+    color: var(--yellow);
+  }
+
+  .awaiting-active {
+    background: rgba(63, 185, 80, 0.15);
+    color: var(--green);
+  }
+
+  .project-card .counters {
+    display: flex;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .counter {
+    text-align: center;
+    flex: 1;
+  }
+
+  .counter .counter-value {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .counter .counter-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Detail panel */
+  .detail-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+  }
+
+  .detail-overlay.active { display: flex; justify-content: center; align-items: flex-start; padding-top: 60px; }
+
+  .detail-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-width: 720px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+    animation: slideUp 0.2s ease;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .detail-panel .close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .detail-panel .close-btn:hover {
+    color: var(--text);
+    border-color: var(--text-dim);
+  }
+
+  .detail-panel h2 {
+    font-size: 22px;
+    margin-bottom: 4px;
+    padding-right: 40px;
+  }
+
+  .detail-panel .detail-meta {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  .detail-section {
+    margin-bottom: 24px;
+  }
+
+  .detail-section h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .detail-section h3 .count-badge {
+    background: rgba(88, 166, 255, 0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+
+  .detail-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+
+  .detail-item .item-id {
+    font-size: 11px;
+    color: var(--purple);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .detail-item .item-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .detail-item .item-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .empty-state {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-style: italic;
+    padding: 12px 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .container { padding: 16px; }
+    .header { padding: 16px; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .stats-bar { gap: 8px; }
+    .stat-card { padding: 12px 16px; }
+    .stat-card .stat-value { font-size: 22px; }
+    .detail-panel { padding: 20px; width: 95%; }
+    .detail-overlay.active { padding-top: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>⬡</span> Hermes Dashboard</h1>
+  <div class="header-meta">
+    <span id="lastUpdated"></span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="projects-grid" id="projectsGrid"></div>
+</div>
+
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-panel" id="detailPanel"></div>
+</div>
+
+<script>
+const data = DASHBOARD_DATA_PLACEHOLDER;
+
+// Render stats
+function renderStats() {
+  const projects = data.projects;
+  const totalDecisions = projects.reduce((s, p) => s + p.decisions.length, 0);
+  const totalMechanisms = projects.reduce((s, p) => s + p.mechanisms.length, 0);
+  const totalDebt = projects.reduce((s, p) => s + p.debt.length, 0);
+
+  const stats = [
+    { value: projects.length, label: 'Projects' },
+    { value: totalDecisions, label: 'Decisions' },
+    { value: totalMechanisms, label: 'Mechanisms' },
+    { value: totalDebt, label: 'Carried Debt' },
+  ];
+
+  document.getElementById('statsBar').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+// Render project cards
+function renderProjects() {
+  const grid = document.getElementById('projectsGrid');
+  grid.innerHTML = data.projects.map((p, i) => {
+    const awaitingClass = p.awaiting.toLowerCase().includes('user') ? 'awaiting-user' : 'awaiting-active';
+    const awaitingIcon = p.awaiting.toLowerCase().includes('user') ? '⏳' : '⚡';
+    return `
+      <div class="project-card" onclick="showDetail(${i})">
+        <span class="cycle-badge">${p.cycle}</span>
+        <h2>${p.name}</h2>
+        <div class="challenge">${p.challenge}</div>
+        <div class="awaiting ${awaitingClass}">${awaitingIcon} ${p.awaiting}</div>
+        <div class="counters">
+          <div class="counter">
+            <div class="counter-value">${p.decisions.length}</div>
+            <div class="counter-label">Decisions</div>
+          </div>
+          <div class="counter">
+            <div class="counter-value">${p.mechanisms.length}</div>
+            <div class="counter-label">Mechanisms</div>
+          </div>
+          <div class="counter">
+            <div class="counter-value">${p.debt.length}</div>
+            <div class="counter-label">Debt</div>
+          </div>
+          <div class="counter">
+            <div class="counter-value">${p.conventions.length}</div>
+            <div class="counter-label">Conventions</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Show detail panel
+function showDetail(index) {
+  const p = data.projects[index];
+  const overlay = document.getElementById('detailOverlay');
+  const panel = document.getElementById('detailPanel');
+
+  const updated = p.updated ? new Date(p.updated).toLocaleString() : 'Unknown';
+
+  let html = `
+    <button class="close-btn" onclick="closeDetail()">✕</button>
+    <h2>${p.name}</h2>
+    <div class="detail-meta">${p.cycle} · Last updated: ${updated}</div>
+
+    <div class="detail-section">
+      <h3>Active Challenge</h3>
+      <div class="detail-item">
+        <div class="item-title">${p.challenge}</div>
+        <div class="item-desc">Status: ${p.status} · Awaiting: ${p.awaiting}</div>
+      </div>
+    </div>
+  `;
+
+  // Decisions
+  html += `<div class="detail-section"><h3>Decisions <span class="count-badge">${p.decisions.length}</span></h3>`;
+  if (p.decisions.length === 0) {
+    html += `<div class="empty-state">No decisions recorded yet</div>`;
+  } else {
+    p.decisions.forEach(d => {
+      html += `
+        <div class="detail-item">
+          <div class="item-id">${d.id}</div>
+          <div class="item-title">${d.title}</div>
+          <div class="item-desc">${d.rationale}</div>
+        </div>
+      `;
+    });
+  }
+  html += `</div>`;
+
+  // Mechanisms
+  html += `<div class="detail-section"><h3>Mechanisms <span class="count-badge">${p.mechanisms.length}</span></h3>`;
+  if (p.mechanisms.length === 0) {
+    html += `<div class="empty-state">No mechanisms promoted yet</div>`;
+  } else {
+    p.mechanisms.forEach(m => {
+      html += `
+        <div class="detail-item">
+          <div class="item-id">${m.id}</div>
+          <div class="item-title">${m.name}</div>
+          <div class="item-desc">${m.description}</div>
+        </div>
+      `;
+    });
+  }
+  html += `</div>`;
+
+  // Debt
+  html += `<div class="detail-section"><h3>Carried Debt <span class="count-badge">${p.debt.length}</span></h3>`;
+  if (p.debt.length === 0) {
+    html += `<div class="empty-state">No carried debt — clean slate ✓</div>`;
+  } else {
+    p.debt.forEach(d => {
+      html += `
+        <div class="detail-item">
+          <div class="item-id">${d.id}</div>
+          <div class="item-desc">${d.description}</div>
+        </div>
+      `;
+    });
+  }
+  html += `</div>`;
+
+  // Conventions
+  html += `<div class="detail-section"><h3>Locked Conventions <span class="count-badge">${p.conventions.length}</span></h3>`;
+  if (p.conventions.length === 0) {
+    html += `<div class="empty-state">No conventions locked yet</div>`;
+  } else {
+    p.conventions.forEach(c => {
+      html += `
+        <div class="detail-item">
+          <div class="item-id">${c.id}</div>
+          <div class="item-desc">${c.text}</div>
+        </div>
+      `;
+    });
+  }
+  html += `</div>`;
+
+  panel.innerHTML = html;
+  overlay.classList.add('active');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('active');
+}
+
+// Close on overlay click
+document.getElementById('detailOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeDetail();
+});
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeDetail();
+});
+
+// Update timestamp
+document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date(data.generated).toLocaleString();
+
+renderStats();
+renderProjects();
+</script>
+</body>
+</html>
