@@ -344,7 +344,7 @@
 
 <script>
 const data = {
-  "generated": "2026-10-25T14:50:18.474450Z",
+  "generated": "2026-10-27T18:57:56.715267Z",
   "projects": [
     {
       "id": "ai_trading_bot",
@@ -375,6 +375,36 @@ const data = {
       "conventions": [],
       "audit_count": 5,
       "updated": "2026-10-25T12:30:16.897528"
+    },
+    {
+      "id": "client_site_maintenance",
+      "name": "Client Site Maintenance",
+      "cycle": "C.1",
+      "status": "ACTIVE CYCLE C.1",
+      "challenge": "Design and stand up a safe, recurring client website maintenance program",
+      "awaiting": "User Input",
+      "decisions": [
+        {
+          "id": "DEC-1",
+          "title": "Staged autonomy for maintenance work",
+          "rationale": "Hermes prepares backups and applies only safe minor/patch plugin updates automatically; anything bigger (major version, Shopify app changes, theme changes) is flagged for Isaac approval, not auto-applied \u2014 these are live client production sites."
+        },
+        {
+          "id": "DEC-2",
+          "title": "Backups must be verified per site before automation touches it, not assumed",
+          "rationale": "Isaac confirmed every site already has some backup solution (host-level or plugin), but an unverified/untested backup is not a safety net. Each site needs a confirmed-restorable backup check before it enters the automated maintenance cycle."
+        },
+        {
+          "id": "DEC-3",
+          "title": "Staggered one-site-per-day cadence across the month",
+          "rationale": "~20 client sites is too many to touch same-day; staggering spreads workload, limits blast radius if a maintenance run goes wrong, and keeps each day's email digest focused on one site."
+        }
+      ],
+      "mechanisms": [],
+      "debt": [],
+      "conventions": [],
+      "audit_count": 5,
+      "updated": "2026-10-27T20:57:09.909073"
     },
     {
       "id": "ecosystem",
