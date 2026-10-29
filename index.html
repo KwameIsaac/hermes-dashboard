@@ -344,7 +344,7 @@
 
 <script>
 const data = {
-  "generated": "2026-10-29T12:49:59.728148Z",
+  "generated": "2026-10-29T13:31:21.710715Z",
   "projects": [
     {
       "id": "ai_trading_bot",
@@ -420,12 +420,22 @@ const data = {
           "id": "M2",
           "name": "Sisonke pilot: live update applied and verified (Astra theme)",
           "description": "First live-site change executed under the staged-autonomy maintenance program. Astra theme updated on sisonke-solutions.co.za from 4.8.12 to 4.14.1 via SFTP (live account has no shell/WP-CLI access, file-transfer only). Official zip downloaded from wordpress.org (not license-gated, safe path). Old theme archived in place at wp-content/themes/astra_old_4812 for instant rollback via SFTP rename. Safety net was a genuine same-day UpdraftPlus backup set (db+plugins+themes+uploads, dated 2026-10-29 12:20), not the year-stale WPVivid zips found earlier. Verified post-update: theme version confirmed 4.14.1 via direct style.css read, 8 live pages spot-checked all HTTP 200 with content byte-identical to the verified staging clone (0-8 char diff, noise-level). No plugin or core changes were needed on live - both were already current; only loginizer-security remains pending, blocked by an inactive Softaculous license (follow-up, not resolved this session)."
+        },
+        {
+          "id": "M3",
+          "name": "Sisonke pilot: critical plugin vulnerability remediation",
+          "description": "Triggered by client security incident (Sisonke Operations Director Nicolaas Liebenberg, overdue since 22 Oct, citing CVE-2026-109618/109619 'php2shell' PHP RCE + requesting admin/file-integrity/log/WAF review). Verified live PHP 8.3.36 is already the patched version for php2shell (not exposed). Ran a security review beyond the php2shell question: Wordfence's own threat-intel scan (5 days old, never actioned) flagged 15 active plugins with known unpatched CVEs, most severely UpdraftPlus 1.26.1 (CVE-2026-10795, unauthenticated auth bypass via UpdraftCentral udrpc, CVSS 9.8) and WPvivid Backup 0.9.117 (CVE-2026-1357, unauthenticated arbitrary file upload/RCE via predictable AES key fallback, CVSS 9.8) - both ironically the site's own backup plugins. WordPress's native update-check under-reported these as current because ManageWP Worker (confirmed as Isaac/TCB's own GoDaddy Pro account) intercepts the update transient for its own dashboard; cross-checked real versions directly against the wordpress.org plugin API to confirm. Patched both to latest (UpdraftPlus 1.26.14, WPvivid 0.9.136) via the same verified SFTP zip-swap pattern (DEC-5) - staging first, then live - since the ManageWP interception meant WP-CLI's own `plugin update` silently no-opped; used `wp plugin install --version=X --force` to pull directly from wordpress.org instead. Verified on both sites: file counts matched local exactly, WP bootstrapped without fatal errors, both plugins active and loaded, live spot-checked pages all HTTP 200. Admin account review and Wordfence file-change log both came back clean (no unrecognized admins, 0 unexpected file changes) - no evidence of active compromise, but this was a real standing exposure that had gone unactioned for 5+ days. 13 lower-severity flagged plugins remain unpatched (not yet reviewed individually)."
         }
       ],
-      "debt": [],
+      "debt": [
+        {
+          "id": "DEBT-1",
+          "description": "13 lower-severity Wordfence-flagged plugin vulnerabilities on sisonke-solutions.co.za remain unpatched (WooCommerce, WPCode Lite, WooCommerce PayPal Payments, WP File Manager, Unlimited Elements for Elementor, Uncanny Groups/Toolkit for LearnDash, header-footer-elementor, The Plus Addons for Elementor, ShopBuilder, Popup Maker, Members, Yoco Payments, WP Custom Admin Interface)"
+        }
+      ],
       "conventions": [],
-      "audit_count": 9,
-      "updated": "2026-10-29T14:49:57.073479"
+      "audit_count": 11,
+      "updated": "2026-10-29T15:31:18.768738"
     },
     {
       "id": "ecosystem",
