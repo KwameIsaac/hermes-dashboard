@@ -344,7 +344,7 @@
 
 <script>
 const data = {
-  "generated": "2026-10-29T12:35:28.937461Z",
+  "generated": "2026-10-29T12:49:59.728148Z",
   "projects": [
     {
       "id": "ai_trading_bot",
@@ -403,6 +403,11 @@ const data = {
           "id": "DEC-4",
           "title": "Sisonke Software Solutions (sisonke-solutions.co.za) selected as pilot site for full maintenance pipeline",
           "rationale": "First end-to-end test of staged-autonomy maintenance process (DEC-1/2/3) on a real client site before rollout to the ~40-50 site roster. WordPress+WooCommerce+LearnDash site, xneelo-hosted, SFTP-only on live (no shell), staging built on separate xneelo account (tthc-stage.co.za) since the live account had no space/permissions for in-place staging."
+        },
+        {
+          "id": "DEC-5",
+          "title": "Live WP-CLI-less sites (SFTP/file-transfer only accounts) use an SFTP zip-swap pattern for theme/plugin updates not blocked by licensing",
+          "rationale": "Sisonke's live xneelo account has no shell/WP-CLI, only SFTP. Verified working pattern: download the official update zip, upload to a new sibling theme/plugin folder, then atomically rename old->archived and new->live via SFTP rename (no file content is overwritten in place, giving an instant rollback path). Applies to any other roster site on a similarly SFTP-only account."
         }
       ],
       "mechanisms": [
@@ -410,12 +415,17 @@ const data = {
           "id": "M1",
           "name": "Sisonke pilot: staging-first WP maintenance workflow",
           "description": "Verified procedure for this client-site-maintenance program: (1) confirm platform via live HTML read-only, (2) build/verify a staging clone via SSH/WP-CLI on a separate hosting account when the live account can't host staging in-place, (3) capture a full-site screenshot+text baseline of live before any change, (4) activate/diagnose on staging only, (5) force a live wordpress.org update check rather than trusting WP's own cached transient (can be stale or deliberately blanked by a site-specific snippet), (6) apply only verified-safe updates on staging, (7) diff staging against the pre-change baseline before considering a change ready to promote to live."
+        },
+        {
+          "id": "M2",
+          "name": "Sisonke pilot: live update applied and verified (Astra theme)",
+          "description": "First live-site change executed under the staged-autonomy maintenance program. Astra theme updated on sisonke-solutions.co.za from 4.8.12 to 4.14.1 via SFTP (live account has no shell/WP-CLI access, file-transfer only). Official zip downloaded from wordpress.org (not license-gated, safe path). Old theme archived in place at wp-content/themes/astra_old_4812 for instant rollback via SFTP rename. Safety net was a genuine same-day UpdraftPlus backup set (db+plugins+themes+uploads, dated 2026-10-29 12:20), not the year-stale WPVivid zips found earlier. Verified post-update: theme version confirmed 4.14.1 via direct style.css read, 8 live pages spot-checked all HTTP 200 with content byte-identical to the verified staging clone (0-8 char diff, noise-level). No plugin or core changes were needed on live - both were already current; only loginizer-security remains pending, blocked by an inactive Softaculous license (follow-up, not resolved this session)."
         }
       ],
       "debt": [],
       "conventions": [],
-      "audit_count": 7,
-      "updated": "2026-10-29T14:35:26.501696"
+      "audit_count": 9,
+      "updated": "2026-10-29T14:49:57.073479"
     },
     {
       "id": "ecosystem",
