@@ -344,7 +344,7 @@
 
 <script>
 const data = {
-  "generated": "2026-10-29T14:22:19.981847Z",
+  "generated": "2026-10-29T15:16:23.613035Z",
   "projects": [
     {
       "id": "ai_trading_bot",
@@ -430,6 +430,11 @@ const data = {
           "id": "M4",
           "name": "Sisonke pilot: remaining 10 flagged plugins patched",
           "description": "Followed up on DEBT-1 (13 Wordfence-flagged plugins beyond the 2 CRITICAL ones already fixed in M3). Cross-checked all 13 real current wordpress.org versions directly (bypassing ManageWP's update-check interception, same as M3): 10 were safe minor/patch bumps, applied to staging via WP-CLI force-install then to live via the SFTP zip-swap pattern (DEC-5). 2 (WooCommerce 10.3.8->11.2.1, WooCommerce PayPal Payments 3.2.1->4.2.0) are major version jumps on the core commerce engine - held for Isaac's explicit approval per staged autonomy, not auto-applied. 1 (Uncanny Groups for LearnDash) is premium/licensed, not on wordpress.org - same blocked-license situation as loginizer-security. Mid-swap, wp-file-manager's live folder briefly went missing (upload/rename ordering issue), which caused WordPress to auto-deactivate it; caught via a post-swap active_plugins check, fixed by promoting the uploaded new version into place and re-adding it to active_plugins. Final sweep: all 10 new versions verified via direct file read on live, all confirmed in active_plugins, WP bootstraps clean, 7 live pages diffed byte-identical against the verified staging clone."
+        },
+        {
+          "id": "M5",
+          "name": "Sisonke pilot: WooCommerce major version update, staging-tested then live",
+          "description": "Closed out the WooCommerce + WooCommerce PayPal Payments items from DEBT-2 (the only 2 of the original 13 that were major version jumps held for explicit approval). Isaac approved after staging verification. Procedure: (1) staging: wp-cli force-install to target versions, ran `wp wc update` (27 DB migration callbacks, all succeeded), verified WP bootstrap clean, zero PHP fatals under WP_DEBUG, (2) functional test beyond static-page checks - simulated real add-to-cart -> cart totals/shipping -> checkout rendering via WooCommerce's own AJAX endpoints (curl + cookie jar, no browser needed), confirmed the active payment gateway (Yoco) renders correctly and the disabled-but-installed PayPal gateway's settings load without error, (3) same SFTP zip-swap pattern to live (WooCommerce alone is ~5,500 files, needed several resumable upload passes), (4) live DB migration triggered via ActionScheduler_QueueRunner::instance()->run() through a temporary wp-load.php diagnostic script (direct do_action calls on woocommerce_run_update_callback did NOT mark Action Scheduler actions complete and looped without progressing db_version - the queue runner's own run() method was required), (5) repeated the real add-to-cart/checkout functional test directly on live (safe - WooCommerce carts are session-only, no DB order created), cleaned up the test cart item after. All verified clean: db_version confirmed 11.2.1, 8 live pages spot-checked all HTTP 200, zero fatal errors, correct payment gateway rendering."
         }
       ],
       "debt": [
@@ -443,8 +448,8 @@ const data = {
         }
       ],
       "conventions": [],
-      "audit_count": 13,
-      "updated": "2026-10-29T16:22:15.564406"
+      "audit_count": 14,
+      "updated": "2026-10-29T17:16:20.471660"
     },
     {
       "id": "ecosystem",
