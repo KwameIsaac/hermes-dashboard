@@ -344,7 +344,7 @@
 
 <script>
 const data = {
-  "generated": "2026-10-27T18:57:56.715267Z",
+  "generated": "2026-10-29T12:35:28.937461Z",
   "projects": [
     {
       "id": "ai_trading_bot",
@@ -398,13 +398,24 @@ const data = {
           "id": "DEC-3",
           "title": "Staggered one-site-per-day cadence across the month",
           "rationale": "~20 client sites is too many to touch same-day; staggering spreads workload, limits blast radius if a maintenance run goes wrong, and keeps each day's email digest focused on one site."
+        },
+        {
+          "id": "DEC-4",
+          "title": "Sisonke Software Solutions (sisonke-solutions.co.za) selected as pilot site for full maintenance pipeline",
+          "rationale": "First end-to-end test of staged-autonomy maintenance process (DEC-1/2/3) on a real client site before rollout to the ~40-50 site roster. WordPress+WooCommerce+LearnDash site, xneelo-hosted, SFTP-only on live (no shell), staging built on separate xneelo account (tthc-stage.co.za) since the live account had no space/permissions for in-place staging."
         }
       ],
-      "mechanisms": [],
+      "mechanisms": [
+        {
+          "id": "M1",
+          "name": "Sisonke pilot: staging-first WP maintenance workflow",
+          "description": "Verified procedure for this client-site-maintenance program: (1) confirm platform via live HTML read-only, (2) build/verify a staging clone via SSH/WP-CLI on a separate hosting account when the live account can't host staging in-place, (3) capture a full-site screenshot+text baseline of live before any change, (4) activate/diagnose on staging only, (5) force a live wordpress.org update check rather than trusting WP's own cached transient (can be stale or deliberately blanked by a site-specific snippet), (6) apply only verified-safe updates on staging, (7) diff staging against the pre-change baseline before considering a change ready to promote to live."
+        }
+      ],
       "debt": [],
       "conventions": [],
-      "audit_count": 5,
-      "updated": "2026-10-27T20:57:09.909073"
+      "audit_count": 7,
+      "updated": "2026-10-29T14:35:26.501696"
     },
     {
       "id": "ecosystem",
